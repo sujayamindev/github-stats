@@ -34,6 +34,8 @@ fn logFn(
 
 const embedded_overview_template = @embedFile("templates/overview.svg");
 const embedded_languages_template = @embedFile("templates/languages.svg");
+const embedded_overview_borderless_template = @embedFile("templates/overview-borderless.svg");
+const embedded_languages_borderless_template = @embedFile("templates/languages-borderless.svg");
 
 const Args = struct {
     access_token: ?[]const u8 = null,
@@ -45,8 +47,11 @@ const Args = struct {
     exclude_repos: ?[]const u8 = null,
     exclude_langs: ?[]const u8 = null,
     exclude_private: bool = false,
+    borderless: bool = false,
     overview_output_file: ?[]const u8 = null,
     languages_output_file: ?[]const u8 = null,
+    overview_borderless_output_file: ?[]const u8 = null,
+    languages_borderless_output_file: ?[]const u8 = null,
     overview_template: ?[]const u8 = null,
     languages_template: ?[]const u8 = null,
     max_retries: ?usize = 25,
@@ -333,6 +338,28 @@ pub fn main(init: std.process.Init) !void {
                     embedded_languages_template,
             ),
         );
+
+        if (args.borderless) {
+            try writeFile(
+                io,
+                args.overview_borderless_output_file orelse "overview-borderless.svg",
+                try overview(
+                    &arena,
+                    aggregate_stats,
+                    embedded_overview_borderless_template,
+                ),
+            );
+
+            try writeFile(
+                io,
+                args.languages_borderless_output_file orelse "languages-borderless.svg",
+                try languages(
+                    &arena,
+                    aggregate_stats,
+                    embedded_languages_borderless_template,
+                ),
+            );
+        }
     }
 }
 
